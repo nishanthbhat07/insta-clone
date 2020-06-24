@@ -45,7 +45,7 @@ const Navbar = () => {
     <nav>
       <div className="nav-wrapper white ">
         <Link to={state ? "/" : "/signup"} className="brand-logo left">
-          Instagram
+          <img src="/logo-via-logohub" alt="postergram" />
         </Link>
         <ul id="nav-mobile" className="right">
           {renderList()}
