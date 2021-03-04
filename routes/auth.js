@@ -1,11 +1,25 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const crypto = require("crypto");
 const router = express.Router();
 const User = mongoose.model("User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config/keys");
 const requireLogin = require("../middleware/requireLogin");
+const nodemailer = require("nodemailer");
+const sendgridTransport = require("nodemailer-sendgrid-transport");
+
+const transporter = nodemailer.createTransport(
+  sendgridTransport({
+    auth: {
+      api_key:
+        "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",
+    },
+  })
+);
+
+//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
 
 router.post("/signup", (req, res) => {
   const name = req.body.name;
@@ -31,7 +45,15 @@ router.post("/signup", (req, res) => {
           });
           user
             .save()
-            .then((user) => res.json({ message: "saved successfully" }))
+            .then((user) => {
+              transporter.sendMail({
+                to: user.email,
+                from: "no-reply@postergram.com",
+                subject: "Signup Success!!",
+                html: "<h1>Welcome to Postergram<h1>",
+              });
+              res.json({ message: "saved successfully" });
+            })
             .catch((err) => console.log(err));
         });
       })
@@ -67,4 +89,38 @@ router.post("/signin", (req, res) => {
       .catch((err) => console.log(err));
   });
 });
+
+router.post("/reset-password", (req, res) => {
+  crypto.randomBytes(32, (err, buffer) => {
+    if (err) {
+      console.log(err);
+    }
+    const token = buffer.toString("hex");
+    console.log(buffer);
+    User.findOne({ email: req.body.email }).then((user) => {
+      if (!user) {
+        return res
+          .status(422)
+          .json({ error: "User doesnt exists with that email" });
+      }
+      user.resetToken = token;
+      user.expireToken = Date.now() + 60 * 60 * 1000;
+      user.save().then((result) => {
+        transporter.sendMail({
+          to: user.email,
+          from: "no-reply@postergram.com",
+          subject: "Password Reset",
+          html: `s
+          <p>
+          You requested for password reset
+          </p>
+          <h5>Click on this <a href="http://localhost:3000/reset/${token}">link</a></h5>
+          `,
+        });
+        res.json({ messgae: "Check your email" });
+      });
+    });
+  });
+});
+
 module.exports = router;

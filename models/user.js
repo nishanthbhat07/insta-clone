@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
+
       required: true,
     },
     email: {
@@ -20,6 +21,10 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    resetToken: {
+      type: String,
+    },
+    expireToken: Date,
     following: [
       {
         type: ObjectId,

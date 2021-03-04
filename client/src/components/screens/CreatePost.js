@@ -43,7 +43,7 @@ const CreatePost = () => {
     data.append("file", image);
     data.append("upload_preset", "instagram-post-images");
     data.append("cloud_name", "dl0dsqomf");
-    fetch("https://api.cloudinary.com/v1_1/dl0dsqomf/image/upload", {
+    fetch("https://api.cloudinary.com/v1_1/dl0dsqomf/pdf/upload", {
       method: "post",
       body: data,
     })
