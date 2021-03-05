@@ -29,7 +29,6 @@ To view this website, you can view it here!
 
 This web-app is built using MERN stack.
 
-
  - The web app uses a cloud database: MongoDB Atlas. 
  - Front-end is built using ReactJS and styling is done using materializecss.
  -  It uses redux as state management library. 
